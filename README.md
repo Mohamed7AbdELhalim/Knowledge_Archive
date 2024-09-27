@@ -1,4 +1,31 @@
 # Knowledge_Archive
+
+markdown
+# Link Organization App
+
+This is a simple React application for organizing and storing links using Firebase for authentication and database storage.
+
+## Setup
+
+1. Clone this repository
+2. Install dependencies: `npm install`
+3. Create a Firebase project and add your configuration to `src/firebase.js`
+4. Run the app: `npm start`
+
+## Available Scripts
+
+In the project directory, you can run:
+
+- `npm start`: Runs the app in development mode
+- `npm test`: Launches the test runner
+- `npm run build`: Builds the app for production
+
+## Learn More
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+For Firebase, visit the [Firebase documentation](https://firebase.google.com/docs).
+
+
 ### Project Overview
 
 The goal of this project is to develop a JavaScript application that allows users to store and organize links effectively, especially in a setting with limited financial resources. The application will utilize hashtags or folders for categorization, making it easy for users to classify and retrieve links based on their interests or the context in which they’re used. 
