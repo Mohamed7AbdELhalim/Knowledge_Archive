@@ -1,0 +1,12 @@
+// src/components/LinkList.css
+.link-list {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.link-list h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+}
