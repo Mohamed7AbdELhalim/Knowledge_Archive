@@ -151,3 +151,5 @@ Now your code is on GitHub. To run it:
 2. Install dependencies by running `npm install` in the project directory.
 3. Create a Firebase project and add your configuration to `src/firebase.js`.
 4. Run the app using `npm start`.
+
+Remember to add your Firebase configuration to the `src/firebase.js` file before running the app. Never commit sensitive information like API keys to GitHub. Consider using environment variables for sensitive data in a production environment
