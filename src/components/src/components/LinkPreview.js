@@ -1,5 +1,6 @@
 // src/components/LinkPreview.js
 import React, { useState, useEffect } from 'react';
+import './LinkPreview.css';
 
 const LinkPreview = ({ url, onMetadataFetch }) => {
   const [metadata, setMetadata] = useState(null);
@@ -32,74 +33,214 @@ const LinkPreview = ({ url, onMetadataFetch }) => {
     fetchMetadata();
   }, [url, onMetadataFetch]);
 
-  if (loading) return <p>Loading preview...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <div className="link-preview loading">Loading preview...</div>;
+  if (error) return <div className="link-preview error">{error}</div>;
   if (!metadata) return null;
 
   return (
     <div className="link-preview">
-      {metadata.image && <img src={metadata.image.url} alt="Link preview" />}
-      <h3>{metadata.title}</h3>
-      <p>{metadata.description}</p>
+      <div className="link-preview-content">
+        <h3 className="link-title">{metadata.title}</h3>
+        <p className="link-description">{metadata.description}</p>
+        <span className="link-url">{metadata.url}</span>
+      </div>
+      {metadata.image && (
+        <div className="link-image-container">
+          <img src={metadata.image.url} alt="Link preview" className="link-image" />
+        </div>
+      )}
     </div>
   );
 };
 
 export default LinkPreview;
 
-// src/components/LinkForm.js
-import React, { useState, useCallback } from 'react';
+// src/components/LinkItem.js
+import React from 'react';
+import './LinkItem.css';
+
+const LinkItem = ({ link }) => {
+  return (
+    <div className="link-item">
+      <div className="link-item-content">
+        <h3 className="link-title">{link.title}</h3>
+        <p className="link-description">{link.description}</p>
+        <a href={link.url} className="link-url" target="_blank" rel="noopener noreferrer">
+          {link.url}
+        </a>
+        {link.tags && link.tags.length > 0 && (
+          <div className="link-tags">
+            {link.tags.map((tag, index) => (
+              <span key={index} className="link-tag">#{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      {link.image && (
+        <div className="link-image-container">
+          <img src={link.image} alt="Link preview" className="link-image" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LinkItem;
+
+// src/components/LinkList.js
+import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
-import LinkPreview from './LinkPreview';
+import { collection, query, onSnapshot } from 'firebase/firestore';
+import LinkItem from './LinkItem';
+import './LinkList.css';
 
-function LinkForm() {
-  const [url, setUrl] = useState('');
-  const [tags, setTags] = useState('');
-  const [metadata, setMetadata] = useState(null);
+function LinkList() {
+  const [links, setLinks] = useState([]);
 
-  const handleMetadataFetch = useCallback((fetchedMetadata) => {
-    setMetadata(fetchedMetadata);
+  useEffect(() => {
+    const q = query(collection(db, 'links'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const linksList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setLinks(linksList);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addDoc(collection(db, 'links'), {
-        url,
-        tags: tags.split(',').map(tag => tag.trim()),
-        title: metadata?.title || '',
-        description: metadata?.description || '',
-        image: metadata?.image?.url || '',
-        createdAt: new Date()
-      });
-      setUrl('');
-      setTags('');
-      setMetadata(null);
-    } catch (error) {
-      console.error('Error adding link:', error);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="url"
-        placeholder="Enter URL"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Enter tags (comma-separated)"
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
-      />
-      <LinkPreview url={url} onMetadataFetch={handleMetadataFetch} />
-      <button type="submit">Add Link</button>
-    </form>
+    <div className="link-list">
+      <h2>Your Links</h2>
+      {links.map(link => (
+        <LinkItem key={link.id} link={link} />
+      ))}
+    </div>
   );
 }
 
-export default LinkForm;
+export default LinkList;
+
+// src/components/LinkPreview.css
+.link-preview {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  background-color: #f6f8fa;
+}
+
+.link-preview-content {
+  flex: 1;
+}
+
+.link-image-container {
+  width: 100px;
+  height: 100px;
+  margin-left: 12px;
+  overflow: hidden;
+}
+
+.link-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.link-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.link-description {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #586069;
+}
+
+.link-url {
+  font-size: 12px;
+  color: #0366d6;
+}
+
+.loading, .error {
+  padding: 12px;
+  text-align: center;
+  color: #586069;
+}
+
+// src/components/LinkItem.css
+.link-item {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  background-color: #ffffff;
+}
+
+.link-item-content {
+  flex: 1;
+}
+
+.link-image-container {
+  width: 100px;
+  height: 100px;
+  margin-left: 12px;
+  overflow: hidden;
+}
+
+.link-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.link-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.link-description {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #586069;
+}
+
+.link-url {
+  font-size: 12px;
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.link-url:hover {
+  text-decoration: underline;
+}
+
+.link-tags {
+  margin-top: 8px;
+}
+
+.link-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  margin-right: 4px;
+  background-color: #f1f8ff;
+  color: #0366d6;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+// src/components/LinkList.css
+.link-list {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.link-list h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+}
