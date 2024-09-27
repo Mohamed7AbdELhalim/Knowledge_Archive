@@ -121,4 +121,33 @@ Now that we have a structured outline of the project requirements and some initi
 Alternatively, if you have a specific area you'd like to focus on first, such as the user interface design or the link metadata fetching functionality, we can begin there. What aspect of the project would you like to tackle first?
 
 
-###
+## How to Run on GitHub
+
+1. Create a new repository on GitHub.
+2. Initialize git in your local project folder:
+   ```
+   git init
+   ```
+3. Add all files to git:
+   ```
+   git add .
+   ```
+4. Commit the files:
+   ```
+   git commit -m "Initial commit"
+   ```
+5. Link your local repository to the GitHub repository:
+   ```
+   git remote add origin https://github.com/your-username/your-repo-name.git
+   ```
+6. Push the code to GitHub:
+   ```
+   git push -u origin master
+   ```
+
+Now your code is on GitHub. To run it:
+
+1. Clone the repository to your local machine.
+2. Install dependencies by running `npm install` in the project directory.
+3. Create a Firebase project and add your configuration to `src/firebase.js`.
+4. Run the app using `npm start`.
